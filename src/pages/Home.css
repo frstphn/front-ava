@@ -84,6 +84,9 @@
   font-size: clamp(2.5rem, 7.5vw, 5.5rem);
   text-transform: uppercase;
   margin: 0;
+  /* Contour net collé à la lettre, même couleur que le fond — pas de text-shadow
+     (diffusion/flou), -webkit-text-stroke reste net à 1px. */
+  -webkit-text-stroke: 1px var(--bg);
 }
 
 .home-section--plain {
