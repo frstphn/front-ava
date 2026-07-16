@@ -1,36 +1,52 @@
+/* Bloc actualité — grille calquée sur la maquette :
+   image + titre en dégradé qui la superpose, texte à côté. */
 .home__actuality {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-  padding: 32px 32px 64px;
-  align-items: flex-start;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  column-gap: 2rem;
+  align-items: start;
 }
 
-.home__actuality img {
-  width: 320px;
-  max-width: 100%;
+.home__actuality-media {
+  grid-column: 1;
+}
+
+.home__actuality-media img {
+  width: 100%;
   height: auto;
+  display: block;
   object-fit: cover;
-  flex-shrink: 0;
 }
 
-.home__actuality-text {
-  flex: 1;
-  min-width: 260px;
+.home__actuality-text-col {
+  grid-column: 2;
 }
 
-.home__actuality-text h1 {
+/* Bleed vers la gauche : le titre superpose le bord droit de l'image,
+   cf. maquette. */
+.home__actuality-title {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 1rem -9rem;
+  white-space: nowrap;
   font-family: var(--font-serif);
-  font-style: italic;
-  color: #d1483f;
-  margin: 0 0 16px;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 400;
+  background: linear-gradient(90deg, #e08a2e, #c23b32);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .home__actuality-text p {
-  line-height: 1.6;
-  max-width: 60ch;
+  margin: 0;
+  line-height: 1.7;
 }
 
+/* Sections magnétiques */
 .home-sections {
   display: flex;
   flex-direction: column;
@@ -42,10 +58,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size: cover;
-  background-position: center;
   text-decoration: none;
   color: var(--color-text);
+  overflow: hidden;
+}
+
+.home-section__image {
+  position: absolute;
+  z-index: 1;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.home-section__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
 }
 
 .home-section__content h2 {
@@ -54,7 +82,70 @@
   font-style: italic;
   font-size: clamp(2rem, 6vw, 4.5rem);
   text-transform: uppercase;
-  text-shadow: 0 2px 24px rgba(255, 255, 255, 0.7);
   margin: 0;
+}
+
+.home-section--plain {
+  background-color: var(--bg);
+}
+
+.home__scroll-top {
+  display: block;
+  margin: 2rem auto 3rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+/* Mobile : flux vertical, pas de placement flottant */
+.home-sections--mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-section-mobile {
+  padding: 2rem 1rem;
+  text-decoration: none;
+  color: var(--color-text);
   text-align: center;
+}
+
+.home-section-mobile h2 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(1.75rem, 8vw, 2.5rem);
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+}
+
+.home-section-mobile__images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.home-section-mobile__images img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .home__actuality {
+    grid-template-columns: 1fr;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .home__actuality-text-col {
+    grid-column: 1;
+  }
+
+  .home__actuality-title {
+    margin: 1rem 0 0.5rem;
+    white-space: normal;
+  }
 }

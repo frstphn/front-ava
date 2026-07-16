@@ -1,19 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Typed from 'typed.js'
 import './Splash.css'
 
-const SESSION_KEY = 'ava-splash-seen'
-
 export default function Splash() {
-  const [alreadySeen] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
   const navigate = useNavigate()
   const typedElRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (alreadySeen) return
-    sessionStorage.setItem(SESSION_KEY, '1')
-
     const typed = new Typed(typedElRef.current, {
       strings: ['Ava du Parc', 'Photograp<i>her</i>'],
       contentType: 'html',
@@ -27,21 +21,23 @@ export default function Splash() {
     })
 
     return () => typed.destroy()
-  }, [alreadySeen, navigate])
-
-  if (alreadySeen) {
-    return <Navigate to="/accueil" replace />
-  }
+  }, [navigate])
 
   return (
     <main className="splash" onClick={() => navigate('/accueil')}>
       <div className="splash__stage">
         {/* Réserve la largeur de "Photograph her" pour que "Ava du Parc" (plus court)
-            démarre au même x — aligné avec le P de Photographer, cf. maquette. */}
+            démarre au même x — aligné avec le P de Photographer, cf. maquette.
+            Le wrapper (pas le span typed lui-même) porte la superposition grid :
+            Typed.js insère son curseur comme sibling du span, il doit donc rester
+            dans un flux normal pour progresser avec les lettres plutôt que de se
+            figer au bord droit de la zone réservée. */}
         <span className="splash__ghost" aria-hidden="true">
           Photograp<i>her</i>
         </span>
-        <span ref={typedElRef} className="splash__text" />
+        <span className="splash__typed-wrapper">
+          <span ref={typedElRef} className="splash__text" />
+        </span>
       </div>
     </main>
   )

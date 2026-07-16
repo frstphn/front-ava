@@ -7,21 +7,29 @@
 }
 
 .splash__stage {
-  position: relative;
+  display: grid;
+  grid-template-columns: max-content;
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: 600; /* Semi-bold, cf. maquette */
   font-size: clamp(2rem, 6vw, 4rem);
   white-space: nowrap;
+}
+
+/* Ghost et wrapper superposés dans la même cellule grid : la colonne se
+   dimensionne sur le ghost (le plus long des deux textes), le wrapper
+   s'étire dessus et aligne son contenu à gauche — donc au même x que le
+   ghost, quel que soit le texte actuellement tapé par Typed.js. */
+.splash__ghost,
+.splash__typed-wrapper {
+  grid-area: 1 / 1;
 }
 
 .splash__ghost {
   visibility: hidden;
 }
 
-.splash__text {
-  position: absolute;
-  left: 0;
-  top: 0;
+.splash__typed-wrapper {
+  text-align: left;
 }
 
 .splash__text i,

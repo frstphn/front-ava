@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -10,10 +10,19 @@ import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Une section magnétique par page-galerie (floating + colors), dérivée des
-// pages WP plutôt qu'une liste figée — inclut donc aussi Making-of/Colors,
-// pas seulement les 3 sections visibles sur la maquette partielle.
-const GALLERY_TEMPLATES = new Set(['gallery-floating', 'gallery-colors'])
+// Sections magnétiques : ces 3 galeries précisément (pas Making-of ni Colors,
+// qui ont leurs propres points d'accès ailleurs), + une section Infos & Contact.
+const HOME_GALLERY_SLUGS = ['portraits', 'interieurs', 'reportage']
+const PREVIEW_COUNT = 4
+
+// Positions en % du conteneur pour les images flottantes autour du titre,
+// avec un léger jitter aléatoire pour un rendu moins mécanique.
+const QUADRANTS = [
+  { x: 10, y: 12 },
+  { x: 64, y: 16 },
+  { x: 14, y: 58 },
+  { x: 60, y: 56 },
+]
 
 export default function Home({ page }: { page: WPPage }) {
   const { data: images } = useImages()
@@ -21,22 +30,29 @@ export default function Home({ page }: { page: WPPage }) {
   const isMobile = useIsMobile()
   const sectionsRef = useRef<HTMLDivElement>(null)
 
+  const [placements] = useState(() =>
+    HOME_GALLERY_SLUGS.map(() =>
+      QUADRANTS.map((q) => ({
+        x: q.x + (Math.random() * 8 - 4),
+        y: q.y + (Math.random() * 8 - 4),
+        size: Math.floor(Math.random() * 90) + 150, // 150-240px
+      })),
+    ),
+  )
+
   const gallerySections = useMemo(() => {
-    return (pages ?? [])
-      .filter((p) => GALLERY_TEMPLATES.has(p.template))
-      .map((galleryPage) => {
-        const cover = images?.find(
-          (img) => galleryPage.template === 'gallery-colors' || img.page_cat.includes(galleryPage.slug),
-        )
-        return {
-          page: galleryPage,
-          coverUrl: cover?.media_details?.sizes?.grid?.source_url ?? cover?.source_url,
-        }
-      })
+    return HOME_GALLERY_SLUGS.map((slug) => {
+      const galleryPage = pages?.find((p) => p.slug === slug)
+      const previewImages = (images ?? [])
+        .filter((img) => img.page_cat.includes(slug))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, PREVIEW_COUNT)
+      return { slug, page: galleryPage, previewImages }
+    }).filter((s): s is typeof s & { page: WPPage } => Boolean(s.page))
   }, [pages, images])
 
   useEffect(() => {
-    if (isMobile || !sectionsRef.current || gallerySections.length === 0) return
+    if (isMobile || !sectionsRef.current) return
 
     const ctx = gsap.context(() => {
       const sections = sectionsRef.current!.querySelectorAll('.home-section')
@@ -57,8 +73,8 @@ export default function Home({ page }: { page: WPPage }) {
 
       if (sections.length > 1) {
         // start/end explicites : la progression 0->1 doit couvrir exactement la
-        // distance de scroll du conteneur (N sections de 100vh) pour que chaque
-        // point de snap tombe pile sur le haut d'une section.
+        // distance de scroll du conteneur pour que chaque point de snap tombe
+        // pile sur le haut d'une section.
         ScrollTrigger.create({
           trigger: sectionsRef.current,
           start: 'top top',
@@ -78,27 +94,75 @@ export default function Home({ page }: { page: WPPage }) {
   return (
     <main className="page home">
       <section className="home__actuality">
-        {page.featured_image_url && <img src={page.featured_image_url} alt="" />}
-        <div className="home__actuality-text">
-          <h1 dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
-          <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
+        <div className="home__actuality-media">
+          {page.featured_image_url && <img src={page.featured_image_url} alt="" />}
+        </div>
+        <div className="home__actuality-text-col">
+          <h1 className="home__actuality-title" dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
+          <div className="home__actuality-text" dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
         </div>
       </section>
 
-      <div ref={sectionsRef} className="home-sections">
-        {gallerySections.map(({ page: galleryPage, coverUrl }) => (
-          <Link
-            key={galleryPage.slug}
-            to={`/${galleryPage.slug}`}
-            className="home-section"
-            style={coverUrl ? { backgroundImage: `url(${coverUrl})` } : undefined}
-          >
-            <div className="home-section__content">
+      {isMobile ? (
+        <div className="home-sections home-sections--mobile">
+          {gallerySections.map(({ slug, page: galleryPage, previewImages }) => (
+            <Link key={slug} to={`/${slug}`} className="home-section-mobile">
               <h2>{galleryPage.title.rendered}</h2>
+              <div className="home-section-mobile__images">
+                {previewImages.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
+                    loading="lazy"
+                    alt=""
+                  />
+                ))}
+              </div>
+            </Link>
+          ))}
+          <Link to="/a-propos" className="home-section-mobile">
+            <h2>Infos &amp; Contact</h2>
+          </Link>
+        </div>
+      ) : (
+        <div ref={sectionsRef} className="home-sections">
+          {gallerySections.map(({ slug, page: galleryPage, previewImages }, i) => (
+            <Link key={slug} to={`/${slug}`} className="home-section">
+              {previewImages.map((img, j) => {
+                const pos = placements[i][j]
+                return (
+                  <img
+                    key={img.id}
+                    src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
+                    loading="lazy"
+                    className="home-section__image"
+                    style={{ left: `${pos.x}%`, top: `${pos.y}%`, width: pos.size, height: pos.size }}
+                    alt=""
+                  />
+                )
+              })}
+              <div className="home-section__content">
+                <h2>{galleryPage.title.rendered}</h2>
+              </div>
+            </Link>
+          ))}
+
+          <Link to="/a-propos" className="home-section home-section--plain">
+            <div className="home-section__content">
+              <h2>Infos &amp; Contact</h2>
             </div>
           </Link>
-        ))}
-      </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="home__scroll-top"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Retour en haut de page"
+      >
+        ▲
+      </button>
     </main>
   )
 }
