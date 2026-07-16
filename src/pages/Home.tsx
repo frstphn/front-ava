@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -6,6 +6,7 @@ import type { WPPage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { usePages } from '../hooks/usePages'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { placeImage, getImageDimensions } from '../utils/placeImage'
 import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -15,30 +16,24 @@ gsap.registerPlugin(ScrollTrigger)
 const HOME_GALLERY_SLUGS = ['portraits', 'interieurs', 'reportage']
 const PREVIEW_COUNT = 4
 
-// Positions en % du conteneur pour les images flottantes autour du titre,
-// avec un léger jitter aléatoire pour un rendu moins mécanique.
-const QUADRANTS = [
-  { x: 10, y: 12 },
-  { x: 64, y: 16 },
-  { x: 14, y: 58 },
-  { x: 60, y: 56 },
-]
+// Même moteur de placement que GalleryFloating (src/utils/placeImage.ts), réglé
+// plus compact pour un aperçu de 4 images sur une seule section. 2 couloirs
+// centrés loin du milieu de l'écran pour laisser le titre respirer, sans avoir
+// besoin de mesurer sa zone comme sur les pages galeries.
+const PREVIEW_PLACEMENT_CONFIG = {
+  minSize: 140,
+  maxSize: 260,
+  laneCount: 2,
+  horizontalJitter: 30,
+  verticalGap: -10,
+  verticalGapJitter: 50,
+}
 
 export default function Home({ page }: { page: WPPage }) {
   const { data: images } = useImages()
   const { data: pages } = usePages()
   const isMobile = useIsMobile()
   const sectionsRef = useRef<HTMLDivElement>(null)
-
-  const [placements] = useState(() =>
-    HOME_GALLERY_SLUGS.map(() =>
-      QUADRANTS.map((q) => ({
-        x: q.x + (Math.random() * 8 - 4),
-        y: q.y + (Math.random() * 8 - 4),
-        size: Math.floor(Math.random() * 90) + 150, // 150-240px
-      })),
-    ),
-  )
 
   const gallerySections = useMemo(() => {
     return HOME_GALLERY_SLUGS.map((slug) => {
@@ -50,6 +45,25 @@ export default function Home({ page }: { page: WPPage }) {
       return { slug, page: galleryPage, previewImages }
     }).filter((s): s is typeof s & { page: WPPage } => Boolean(s.page))
   }, [pages, images])
+
+  // Un jeu de couloirs indépendant par section — les images de chaque section ne
+  // doivent pas se répartir dans le même espace vertical que celles des autres.
+  const placements = useMemo(() => {
+    return gallerySections.map(({ previewImages }) => {
+      const laneBottoms = [0, 0]
+      return previewImages.map((img) =>
+        placeImage(
+          window.innerWidth,
+          laneBottoms,
+          getImageDimensions(img),
+          null,
+          window.innerHeight,
+          PREVIEW_PLACEMENT_CONFIG,
+        ),
+      )
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gallerySections])
 
   useEffect(() => {
     if (isMobile || !sectionsRef.current) return
@@ -141,7 +155,7 @@ export default function Home({ page }: { page: WPPage }) {
                     src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
                     loading="lazy"
                     className="home-section__image"
-                    style={{ left: `${pos.x}%`, top: `${pos.y}%`, width: pos.size, height: pos.size }}
+                    style={{ left: pos.x, top: pos.y, width: pos.width, height: pos.height }}
                     alt=""
                   />
                 )

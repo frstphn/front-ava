@@ -3,7 +3,7 @@ import type { WPPage, WPImage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { shuffle } from '../utils/shuffle'
-import { placeImage, type TitleZone } from '../utils/placeImage'
+import { placeImage, getImageDimensions, type TitleZone } from '../utils/placeImage'
 import { GALLERY_FLOATING_CONFIG } from '../config/galleryFloating'
 import Lightbox from '../components/Lightbox'
 import './GalleryFloating.css'
@@ -15,7 +15,8 @@ const BEHIND_TITLE_RATIO = 0.35
 interface PlacedImage extends WPImage {
   x: number
   y: number
-  size: number
+  width: number
+  height: number
   behindTitle: boolean
 }
 
@@ -40,15 +41,18 @@ export default function GalleryFloating({ page }: { page: WPPage }) {
 function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[] }) {
   const [orderedImages] = useState<WPImage[]>(() => shuffle(images))
   const [placed, setPlaced] = useState<PlacedImage[]>([])
+  const [maxBottom, setMaxBottom] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const batchRef = useRef(0)
-  const currentYRef = useRef(0)
+  // Un curseur Y par couloir (densité horizontale) — cf. src/utils/placeImage.ts.
+  const laneBottomsRef = useRef<number[]>(new Array(GALLERY_FLOATING_CONFIG.laneCount).fill(0))
   const titleRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
 
   const loadNextBatch = useCallback(() => {
-    const { batchSize, minImageSize, maxImageSize, verticalStep, verticalJitter } = GALLERY_FLOATING_CONFIG
+    const { batchSize, minImageSize, maxImageSize, laneCount, horizontalJitter, verticalGap, verticalGapJitter } =
+      GALLERY_FLOATING_CONFIG
     const next = orderedImages.slice(batchRef.current * batchSize, (batchRef.current + 1) * batchSize)
     if (!next.length) return
 
@@ -63,17 +67,19 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
       : null
 
     const newPlaced = next.map((img) => {
-      const pos = placeImage(window.innerWidth, currentYRef.current, titleZone, window.innerHeight, {
-        minSize: minImageSize,
-        maxSize: maxImageSize,
-        verticalStep,
-        verticalJitter,
-      })
-      currentYRef.current = Math.max(currentYRef.current, pos.y + pos.size)
+      const pos = placeImage(
+        window.innerWidth,
+        laneBottomsRef.current,
+        getImageDimensions(img),
+        titleZone,
+        window.innerHeight,
+        { minSize: minImageSize, maxSize: maxImageSize, laneCount, horizontalJitter, verticalGap, verticalGapJitter },
+      )
       return { ...img, ...pos, behindTitle: Math.random() < BEHIND_TITLE_RATIO }
     })
 
     setPlaced((prev) => [...prev, ...newPlaced])
+    setMaxBottom(Math.max(...laneBottomsRef.current))
     batchRef.current += 1
   }, [orderedImages])
 
@@ -120,7 +126,7 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
   }
 
   return (
-    <main className="page gallery-floating" style={{ minHeight: currentYRef.current + 200 }}>
+    <main className="page gallery-floating" style={{ minHeight: maxBottom + 200 }}>
       <div ref={titleRef} className="gallery-floating__title">
         <h1>{page.title.rendered}</h1>
         <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
@@ -133,7 +139,7 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
           loading="lazy"
           onClick={() => setLightboxIndex(i)}
           className={`gallery-floating__image${img.behindTitle ? ' is-behind-title' : ''}`}
-          style={{ left: img.x, top: img.y, width: img.size, height: img.size }}
+          style={{ left: img.x, top: img.y, width: img.width, height: img.height }}
           alt=""
         />
       ))}

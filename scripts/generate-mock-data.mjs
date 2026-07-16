@@ -13,6 +13,18 @@ const TOTAL_IMAGES = 200
 const PAGE_CATS = ['portraits', 'making-of', 'interieurs', 'reportage']
 const COLOR_TAGS = ['blanc', 'rouge', 'vert', 'bleu', 'jaune', 'magenta', 'cyan', 'noir']
 
+// Ratios d'aspect variés — de vraies photos ne sont pas toutes carrées, indispensable
+// pour tester le placement flottant (GalleryFloating) avec des proportions réalistes.
+const ASPECT_RATIOS = [
+  { w: 1, h: 1 }, // carré
+  { w: 4, h: 5 }, // portrait Instagram
+  { w: 3, h: 4 }, // portrait classique
+  { w: 2, h: 3 }, // portrait 35mm
+  { w: 4, h: 3 }, // paysage classique
+  { w: 3, h: 2 }, // paysage 35mm
+  { w: 16, h: 9 }, // paysage large
+]
+
 // PRNG seedé pour des fixtures reproductibles (pas de diff git à chaque régénération)
 function mulberry32(seed) {
   return function () {
@@ -38,17 +50,37 @@ function buildImage(id) {
   const date = new Date(Date.now() - daysAgo * 86400000).toISOString()
 
   const seed = `ava-${id}`
+  const ratio = pick(ASPECT_RATIOS)
+  const portrait = ratio.h > ratio.w
+  // Dimensions pour un côté long donné, en respectant le ratio et en alternant
+  // aléatoirement l'orientation (portrait/paysage) même pour les ratios non carrés.
+  const flip = !portrait && rand() < 0.5
+  const dims = (longSide) => {
+    const [rw, rh] = flip ? [ratio.h, ratio.w] : [ratio.w, ratio.h]
+    return rw >= rh
+      ? { width: longSide, height: Math.round((longSide * rh) / rw) }
+      : { width: Math.round((longSide * rw) / rh), height: longSide }
+  }
+
+  const full = dims(2400)
+  const grid = dims(800)
+  const lightbox = dims(1600)
+  const thumb = dims(300)
+
   return {
     id,
     date,
-    source_url: `https://picsum.photos/seed/${seed}/2400/2400`,
+    source_url: `https://picsum.photos/seed/${seed}/${full.width}/${full.height}`,
     media_details: {
-      width: 2400,
-      height: 2400,
+      width: full.width,
+      height: full.height,
       sizes: {
-        thumbnail: { source_url: `https://picsum.photos/seed/${seed}/300/300`, width: 300, height: 300 },
-        grid: { source_url: `https://picsum.photos/seed/${seed}/800/800`, width: 800, height: 800 },
-        lightbox: { source_url: `https://picsum.photos/seed/${seed}/1600/1600`, width: 1600, height: 1600 },
+        thumbnail: { source_url: `https://picsum.photos/seed/${seed}/${thumb.width}/${thumb.height}`, ...thumb },
+        grid: { source_url: `https://picsum.photos/seed/${seed}/${grid.width}/${grid.height}`, ...grid },
+        lightbox: {
+          source_url: `https://picsum.photos/seed/${seed}/${lightbox.width}/${lightbox.height}`,
+          ...lightbox,
+        },
       },
     },
     color_tag: [pick(COLOR_TAGS)],
