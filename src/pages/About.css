@@ -1,0 +1,51 @@
+.about {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 48px;
+  /* padding-top vient de .page (hauteur du header) — ne pas utiliser le
+     shorthand `padding` ici, il écraserait cette valeur. */
+  padding-right: 32px;
+  padding-bottom: 48px;
+  padding-left: 32px;
+  align-items: start;
+}
+
+.about__portrait-col img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 16px;
+  object-fit: cover;
+}
+
+.about__contact p {
+  margin: 0;
+  font-family: var(--font-serif);
+}
+
+.about__cv section {
+  margin-bottom: 24px;
+}
+
+.about__cv h3 {
+  font-family: var(--font-serif);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  font-weight: 400;
+  border-bottom: 1px solid var(--color-text);
+  padding-bottom: 6px;
+  margin: 0 0 8px;
+}
+
+.about__cv p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .about {
+    grid-template-columns: 1fr;
+    padding: 32px 16px;
+  }
+}
