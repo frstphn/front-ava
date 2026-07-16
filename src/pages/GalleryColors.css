@@ -1,0 +1,88 @@
+.gallery-colors {
+  background-color: var(--ambient-color, transparent);
+  transition: background-color 0.6s ease;
+  padding-bottom: 48px;
+}
+
+.gallery-colors h1 {
+  text-align: center;
+}
+
+.gallery-colors__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 4px;
+  padding: 0 16px;
+}
+
+.gallery-colors__filters {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 32px 16px;
+}
+
+/* Le brief spécifie du texte blanc, illisible sur le fond #fff8bd du site —
+   on garde le halo bleu mais avec le texte foncé pour rester lisible. */
+.filter-btn {
+  color: var(--color-text);
+  text-shadow:
+    0 0 8px #93c5fd,
+    0 0 20px #3b82f6,
+    0 0 40px #1d4ed8;
+  background: transparent;
+  border: none;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: text-shadow 0.3s;
+}
+
+.filter-btn.active {
+  text-shadow:
+    0 0 12px #bfdbfe,
+    0 0 30px #60a5fa,
+    0 0 60px #2563eb;
+}
+
+.gallery-colors__loading {
+  padding: 32px;
+}
+
+.gallery-colors--mobile h1 {
+  text-align: center;
+}
+
+.gallery-colors__mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.gallery-colors__mobile-list img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+.gallery-colors__filters--mobile {
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-colors__filters--mobile button {
+  background: none;
+  border: none;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  padding: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.gallery-colors__filters--mobile button.is-active {
+  font-weight: 700;
+}
