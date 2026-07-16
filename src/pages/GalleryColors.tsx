@@ -135,7 +135,6 @@ export default function GalleryColors({ page }: { page: WPPage }) {
           images={visibleImages}
           startIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
-          variant="frosted"
         />
       )}
     </main>

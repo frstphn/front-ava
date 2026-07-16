@@ -13,14 +13,28 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 4px;
   padding: 0 16px;
+  /* Le sélecteur de couleur est fixed en bas — laisse la place pour ne pas
+     couvrir la dernière rangée d'images. */
+  padding-bottom: 96px;
 }
 
+/* Fixed en bas d'écran : sinon inaccessible sans scroller jusqu'au bout d'une
+   grille qui peut compter des centaines d'images. */
 .gallery-colors__filters {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1.5rem;
   flex-wrap: wrap;
-  padding: 32px 16px;
+  padding: 16px;
+  background: rgba(255, 248, 189, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* Le brief spécifie du texte blanc, illisible sur le fond #fff8bd du site —
@@ -59,6 +73,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
+  padding-bottom: 96px;
 }
 
 .gallery-colors__mobile-list img {
@@ -69,16 +84,21 @@
 }
 
 .gallery-colors__filters--mobile {
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  padding: 12px 16px;
+  /* Réserve la place du bouton spirale (fixed, bottom-right) pour ne pas
+     chevaucher les derniers filtres. */
+  padding-right: 84px;
 }
 
 .gallery-colors__filters--mobile button {
   background: none;
   border: none;
   font-family: var(--font-serif);
-  font-size: 1.1rem;
-  padding: 8px;
+  font-size: 1rem;
+  padding: 4px;
   color: var(--color-text);
   cursor: pointer;
 }
