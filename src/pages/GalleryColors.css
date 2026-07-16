@@ -1,6 +1,4 @@
 .gallery-colors {
-  background-color: var(--ambient-color, transparent);
-  transition: background-color 0.6s ease;
   padding-bottom: 48px;
 }
 
@@ -38,45 +36,16 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* Limite haute adoucie : un dégradé d'opacité/flou plutôt qu'un bord net.
-   mask-image fait varier l'intensité du backdrop-filter de cette bande, qui
-   se superpose au fond flou de .gallery-colors__filters juste en dessous. */
-.gallery-colors__filters::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(255, 248, 189, 0), rgba(255, 248, 189, 0.85));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  mask-image: linear-gradient(to bottom, transparent, black);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black);
-  pointer-events: none;
-}
-
-/* Le brief spécifie du texte blanc, illisible sur le fond #fff8bd du site —
-   on garde le halo bleu mais avec le texte foncé pour rester lisible. */
+/* Le halo (text-shadow) est calculé par bouton en JS selon sa couleur nommée —
+   cf. HALO_COLORS dans GalleryColors.tsx. */
 .filter-btn {
   color: var(--color-text);
-  text-shadow:
-    0 0 8px #93c5fd,
-    0 0 20px #3b82f6,
-    0 0 40px #1d4ed8;
   background: transparent;
   border: none;
   font-family: var(--font-serif);
   font-size: 1.1rem;
   cursor: pointer;
   transition: text-shadow 0.3s;
-}
-
-.filter-btn.active {
-  text-shadow:
-    0 0 12px #bfdbfe,
-    0 0 30px #60a5fa,
-    0 0 60px #2563eb;
 }
 
 .gallery-colors__loading {

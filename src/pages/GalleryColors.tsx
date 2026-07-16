@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useMemo, useState } from 'react'
 import type { WPPage, WPImage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { useIsMobile } from '../hooks/useIsMobile'
@@ -9,10 +9,10 @@ import './GalleryColors.css'
 const COLOR_TAGS = ['blanc', 'rouge', 'vert', 'bleu', 'jaune', 'magenta', 'cyan', 'noir']
 const FILTERS = ['*', ...COLOR_TAGS]
 
-// Fond derrière la grille = la couleur nommée par le filtre actif (pas juste un
-// vague lavis) — "blanc" doit donner un fond réellement blanc, etc.
-const AMBIENT_COLORS: Record<string, string> = {
-  '*': 'transparent',
+// Halo de chaque bouton filtre = sa propre couleur nommée (desktop uniquement,
+// pas de glow sur mobile cf. brief).
+const HALO_COLORS: Record<string, string> = {
+  '*': '#3b82f6',
   blanc: '#ffffff',
   rouge: '#e24b4a',
   vert: '#639322',
@@ -21,6 +21,12 @@ const AMBIENT_COLORS: Record<string, string> = {
   magenta: '#d4537e',
   cyan: '#5dcaa5',
   noir: '#2c2c2a',
+}
+
+function haloShadow(tag: string, active: boolean) {
+  const color = HALO_COLORS[tag] ?? HALO_COLORS['*']
+  const radii = active ? [12, 30, 60] : [8, 20, 40]
+  return radii.map((r) => `0 0 ${r}px ${color}`).join(', ')
 }
 
 // Étale la vague de flip sur une durée fixe plutôt qu'un délai de i*30ms par carte
@@ -95,10 +101,8 @@ export default function GalleryColors({ page }: { page: WPPage }) {
     )
   }
 
-  const pageStyle = { '--ambient-color': AMBIENT_COLORS[activeFilter] ?? 'transparent' } as CSSProperties
-
   return (
-    <main className="page gallery-colors" style={pageStyle}>
+    <main className="page gallery-colors">
       <h1>{page.title.rendered}</h1>
 
       <div className="gallery-colors__grid">
@@ -125,6 +129,7 @@ export default function GalleryColors({ page }: { page: WPPage }) {
             key={tag}
             type="button"
             className={`filter-btn${activeFilter === tag ? ' active' : ''}`}
+            style={{ textShadow: haloShadow(tag, activeFilter === tag) }}
             onClick={() => setActiveFilter(tag)}
           >
             {tag === '*' ? 'Tout' : tag}
@@ -133,11 +138,7 @@ export default function GalleryColors({ page }: { page: WPPage }) {
       </div>
 
       {lightboxIndex !== null && (
-        <Lightbox
-          images={visibleImages}
-          startIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-        />
+        <Lightbox images={visibleImages} startIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />
       )}
     </main>
   )
