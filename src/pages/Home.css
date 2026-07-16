@@ -122,17 +122,21 @@
   margin: 0 0 1rem;
 }
 
+/* Colonnes CSS plutôt qu'une grille figée : chaque image garde sa vraie proportion
+   (portrait/paysage/carré, cf. fixtures), ce qui casse l'effet "grille 2x2" sans
+   recourir à un positionnement absolu (pas nécessaire ni souhaitable sur mobile). */
 .home-section-mobile__images {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  columns: 2;
+  column-gap: 8px;
 }
 
 .home-section-mobile__images img {
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  margin-bottom: 8px;
   border-radius: 4px;
+  break-inside: avoid;
 }
 
 @media (max-width: 768px) {

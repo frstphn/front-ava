@@ -12,6 +12,12 @@
   --header-height: 128px;
 }
 
+@media (max-width: 768px) {
+  :root {
+    --header-height: 80px;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

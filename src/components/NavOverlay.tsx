@@ -16,6 +16,12 @@ interface NavOverlayProps {
 export default function NavOverlay({ items, onClose }: NavOverlayProps) {
   return createPortal(
     <div className="nav-overlay">
+      {/* L'overlay (portail, au-dessus du header) recouvre entièrement le bouton
+          burger/croix du Header — sans ce bouton dédié, impossible de refermer le menu. */}
+      <button type="button" className="nav-overlay__close" onClick={onClose} aria-label="Fermer le menu">
+        ✕
+      </button>
+
       {items.map((item) => (
         <Link key={item.slug} to={`/${item.slug}`} onClick={onClose}>
           {item.label}

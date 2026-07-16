@@ -20,12 +20,12 @@ const PREVIEW_COUNT = 4
 // Placement dédié à 4 images fixes (src/utils/placeHomePreview.ts) — le moteur de
 // couloirs de GalleryFloating est conçu pour un flux dense, pas pour ce cas.
 const PREVIEW_CONFIG = {
-  minSize: 220,
-  maxSize: 380,
+  minSize: 260,
+  maxSize: 520,
   // header (128px) + marge : les vignettes sont petites, on évite qu'il les recouvre
   // trop (contrairement aux pages galeries où c'est assumé sur des images pleines).
-  topOffset: 170,
-  jitter: 0.06,
+  topOffset: 100,
+  jitter: 0.2,
 }
 
 export default function Home({ page }: { page: WPPage }) {
