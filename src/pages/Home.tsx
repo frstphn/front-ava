@@ -6,7 +6,8 @@ import type { WPPage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { usePages } from '../hooks/usePages'
 import { useIsMobile } from '../hooks/useIsMobile'
-import { placeImage, getImageDimensions, getContainerWidth, type Placement, type TitleZone } from '../utils/placeImage'
+import { getContainerWidth, type TitleZone } from '../utils/placeImage'
+import { placeHomePreviewImages, type PreviewPlacement } from '../utils/placeHomePreview'
 import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -16,15 +17,15 @@ gsap.registerPlugin(ScrollTrigger)
 const HOME_GALLERY_SLUGS = ['portraits', 'interieurs', 'reportage']
 const PREVIEW_COUNT = 4
 
-// Même moteur de placement que GalleryFloating (src/utils/placeImage.ts), réglé
-// plus compact pour un aperçu de 4 images sur une seule section.
-const PREVIEW_PLACEMENT_CONFIG = {
-  minSize: 140,
+// Placement dédié à 4 images fixes (src/utils/placeHomePreview.ts) — le moteur de
+// couloirs de GalleryFloating est conçu pour un flux dense, pas pour ce cas.
+const PREVIEW_CONFIG = {
+  minSize: 150,
   maxSize: 260,
-  laneCount: 3,
-  horizontalJitter: 30,
-  verticalGap: -10,
-  verticalGapJitter: 50,
+  // header (128px) + marge : les vignettes sont petites, on évite qu'il les recouvre
+  // trop (contrairement aux pages galeries où c'est assumé sur des images pleines).
+  topOffset: 170,
+  jitter: 0.06,
 }
 
 export default function Home({ page }: { page: WPPage }) {
@@ -33,7 +34,7 @@ export default function Home({ page }: { page: WPPage }) {
   const isMobile = useIsMobile()
   const sectionsRef = useRef<HTMLDivElement>(null)
   const titleRefs = useRef(new Map<string, HTMLHeadingElement>())
-  const [placements, setPlacements] = useState<Placement[][]>([])
+  const [placements, setPlacements] = useState<PreviewPlacement[][]>([])
 
   const gallerySections = useMemo(() => {
     return HOME_GALLERY_SLUGS.map((slug) => {
@@ -55,7 +56,6 @@ export default function Home({ page }: { page: WPPage }) {
     const viewportHeight = window.innerHeight
 
     const next = gallerySections.map(({ slug, previewImages }) => {
-      const laneBottoms = [0, 0, 0]
       const titleRect = titleRefs.current.get(slug)?.getBoundingClientRect()
       const titleZone: TitleZone | null = titleRect
         ? {
@@ -66,17 +66,7 @@ export default function Home({ page }: { page: WPPage }) {
           }
         : null
 
-      return previewImages.map((img, j) =>
-        placeImage(
-          containerWidth,
-          laneBottoms,
-          j % PREVIEW_PLACEMENT_CONFIG.laneCount,
-          getImageDimensions(img),
-          titleZone,
-          viewportHeight,
-          PREVIEW_PLACEMENT_CONFIG,
-        ),
-      )
+      return placeHomePreviewImages(previewImages, containerWidth, viewportHeight, titleZone, PREVIEW_CONFIG)
     })
 
     setPlacements(next)
