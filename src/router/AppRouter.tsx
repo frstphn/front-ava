@@ -1,8 +1,8 @@
+import { Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { usePages } from '../hooks/usePages'
 import { templateMap } from './templateMap'
 import Splash from '../pages/Splash'
-import GalleryFloating from '../pages/GalleryFloating'
 import Header from '../components/Header'
 import ColorsSpiralButton from '../components/ColorsSpiralButton'
 
@@ -22,13 +22,15 @@ export default function AppRouter() {
     <BrowserRouter>
       <HeaderGate />
       <ColorsSpiralButton />
-      <Routes>
-        <Route path="/" element={<Splash />} />
-        {pages.map((page) => {
-          const Component = templateMap[page.template] ?? GalleryFloating
-          return <Route key={page.slug} path={`/${page.slug}`} element={<Component page={page} />} />
-        })}
-      </Routes>
+      <Suspense fallback={<div className="app-loading">Chargement…</div>}>
+        <Routes>
+          <Route path="/" element={<Splash />} />
+          {pages.map((page) => {
+            const Component = templateMap[page.template] ?? templateMap['gallery-floating']
+            return <Route key={page.slug} path={`/${page.slug}`} element={<Component page={page} />} />
+          })}
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

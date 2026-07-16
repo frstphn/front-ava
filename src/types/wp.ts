@@ -36,4 +36,9 @@ export interface WPPage {
   template: PageTemplate
   title: WPRenderedField
   content: WPRenderedField
+  /** _thumbnail_id résolu en URL — image mise en avant (bloc actualité, portrait About). */
+  featured_image_url?: string
+  /** Champs custom (type ACF) portés par la page À propos. */
+  contact_phone?: string
+  contact_email?: string
 }

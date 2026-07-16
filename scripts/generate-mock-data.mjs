@@ -58,12 +58,49 @@ function buildImage(id) {
 
 const images = Array.from({ length: TOTAL_IMAGES }, (_, i) => buildImage(i + 1))
 
+// Contenu réel repéré dans "20260324-Site Ava.pdf" (bloc actualité "Supernova",
+// CV complet de la page À propos) — réutilisé tel quel plutôt qu'un placeholder.
+const ABOUT_CV_HTML = `
+  <section>
+    <h3>Expositions personnelles et collectives</h3>
+    <p>2025 – Supernova, Cadre en Seine, Paris<br>2020 – NNIPAS, Grands Thermes, La Bourboule<br>2018 – NNIPAS, Sainte-Marie-aux-Mines</p>
+  </section>
+  <section>
+    <h3>Prix</h3>
+    <p>2025, Finaliste Prix Herez<br>2014, Prix Lidl</p>
+  </section>
+  <section>
+    <h3>Edition</h3>
+    <p>2019 – Les Contemplations, auto-édition<br>2011-2013 – Novarupta, revue collective</p>
+  </section>
+  <section>
+    <h3>Publications</h3>
+    <p>Libération, Le Monde, Nez, Omnivore, Fracas, Turbulences Presse</p>
+  </section>
+  <section>
+    <h3>Cartes blanches</h3>
+    <p>2024 – Hermès, Faubourama, Extraversions photographiques<br>2025 – Maison Luzi, 50 ans<br>2018-2025 – Galerie Kraemer<br>2023-2025 – Nike<br>2020-2022 – We Love Green</p>
+  </section>
+  <section>
+    <h3>Commandes</h3>
+    <p>Hermès, L'Oréal, Orchestre d'Auvergne, Nuits de Fourvières, Philharmonie de Paris, Fauchon, Chanel, La Bourse de Commerce, L'Académie du Climat, AG2R La Mondiale, Grand Optical…</p>
+  </section>
+  <section>
+    <h3>Formations</h3>
+    <p>2013 : diplômée du Master en Photographie à l'ENS Louis Lumière</p>
+  </section>
+`.trim()
+
 const pages = [
   {
     slug: 'accueil',
     template: 'home',
-    title: { rendered: 'Accueil' },
-    content: { rendered: '<p>Bloc actualité — mis à jour ~1x/an par le client.</p>' },
+    title: { rendered: 'Supernova' },
+    content: {
+      rendered:
+        "<p>À la suite de la naissance de son premier enfant survenu dans des circonstances difficiles, la photographe Ava du Parc cherche à conjurer cet épisode traumatique. Dans l'intimité de cette nouvelle vie, elle enregistre les éléments qui la composent – des autoportraits, des lumières passagères, la nature qui l'entoure, les êtres aimés – pour se réapproprier son corps, saisir le temps qui passe et qui répare. Comme une supernova, cette explosion lumineuse qui marque la fin de vie d'une étoile, la photographe nous invite.</p>",
+    },
+    featured_image_url: 'https://picsum.photos/seed/ava-actuality/1200/800',
   },
   {
     slug: 'portraits',
@@ -99,7 +136,10 @@ const pages = [
     slug: 'a-propos',
     template: 'about',
     title: { rendered: 'À propos' },
-    content: { rendered: '<p>Bio, coordonnées, CV.</p>' },
+    content: { rendered: ABOUT_CV_HTML },
+    featured_image_url: 'https://picsum.photos/seed/ava-portrait/600/750',
+    contact_phone: '06 17 68 55 85',
+    contact_email: 'contact@avaduparc.com',
   },
 ]
 
