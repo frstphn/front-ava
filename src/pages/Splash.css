@@ -1,0 +1,47 @@
+.splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  cursor: pointer;
+}
+
+.splash__stage {
+  position: relative;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 4rem);
+  white-space: nowrap;
+}
+
+.splash__ghost {
+  visibility: hidden;
+}
+
+.splash__text {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.splash__text i,
+.splash__ghost i {
+  font-style: italic;
+}
+
+.typed-cursor {
+  font-weight: 400;
+  opacity: 1;
+  animation: splash-cursor-blink 1s infinite;
+}
+
+@keyframes splash-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
