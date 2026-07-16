@@ -20,8 +20,8 @@ const PREVIEW_COUNT = 4
 // Placement dédié à 4 images fixes (src/utils/placeHomePreview.ts) — le moteur de
 // couloirs de GalleryFloating est conçu pour un flux dense, pas pour ce cas.
 const PREVIEW_CONFIG = {
-  minSize: 150,
-  maxSize: 260,
+  minSize: 220,
+  maxSize: 380,
   // header (128px) + marge : les vignettes sont petites, on évite qu'il les recouvre
   // trop (contrairement aux pages galeries où c'est assumé sur des images pleines).
   topOffset: 170,
