@@ -1,6 +1,7 @@
 /* Bloc actualité — grille calquée sur la maquette :
    image + titre en dégradé qui la superpose, texte à côté. */
 .home__actuality {
+  width: 100%;
   max-width: 75rem;
   margin: 0 auto;
   padding: 5rem 1.5rem 4rem;
@@ -32,7 +33,7 @@
   z-index: 2;
   margin: 0 0 1rem -9rem;
   white-space: nowrap;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, 5rem);
   font-weight: 400;
   background: linear-gradient(90deg, #e08a2e, #c23b32);
@@ -80,7 +81,7 @@
   font-family: var(--font-sans);
   font-weight: 700;
   font-style: italic;
-  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-size: clamp(2.5rem, 7.5vw, 5.5rem);
   text-transform: uppercase;
   margin: 0;
 }

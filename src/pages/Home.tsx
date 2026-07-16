@@ -58,7 +58,7 @@ export default function Home({ page }: { page: WPPage }) {
       const sections = sectionsRef.current!.querySelectorAll('.home-section')
 
       sections.forEach((section) => {
-        gsap.from(section.querySelector('.home-section__content'), {
+        gsap.from(section.querySelector('.home-section__content, .home__actuality'), {
           scrollTrigger: {
             trigger: section,
             start: 'top center',
@@ -91,20 +91,23 @@ export default function Home({ page }: { page: WPPage }) {
     return () => ctx.revert()
   }, [isMobile, gallerySections.length])
 
+  const actualityBlock = (
+    <div className="home__actuality">
+      <div className="home__actuality-media">
+        {page.featured_image_url && <img src={page.featured_image_url} alt="" />}
+      </div>
+      <div className="home__actuality-text-col">
+        <h1 className="home__actuality-title" dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
+        <div className="home__actuality-text" dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
+      </div>
+    </div>
+  )
+
   return (
     <main className="page home">
-      <section className="home__actuality">
-        <div className="home__actuality-media">
-          {page.featured_image_url && <img src={page.featured_image_url} alt="" />}
-        </div>
-        <div className="home__actuality-text-col">
-          <h1 className="home__actuality-title" dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
-          <div className="home__actuality-text" dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
-        </div>
-      </section>
-
       {isMobile ? (
         <div className="home-sections home-sections--mobile">
+          {actualityBlock}
           {gallerySections.map(({ slug, page: galleryPage, previewImages }) => (
             <Link key={slug} to={`/${slug}`} className="home-section-mobile">
               <h2>{galleryPage.title.rendered}</h2>
@@ -126,6 +129,8 @@ export default function Home({ page }: { page: WPPage }) {
         </div>
       ) : (
         <div ref={sectionsRef} className="home-sections">
+          <section className="home-section home-section--actuality">{actualityBlock}</section>
+
           {gallerySections.map(({ slug, page: galleryPage, previewImages }, i) => (
             <Link key={slug} to={`/${slug}`} className="home-section">
               {previewImages.map((img, j) => {

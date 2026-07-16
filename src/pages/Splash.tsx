@@ -26,14 +26,18 @@ export default function Splash() {
   return (
     <main className="splash" onClick={() => navigate('/accueil')}>
       <div className="splash__stage">
-        {/* Réserve la largeur de "Photograph her" pour que "Ava du Parc" (plus court)
-            démarre au même x — aligné avec le P de Photographer, cf. maquette.
+        {/* Réserve la largeur de "Photograph her" + curseur pour que "Ava du Parc"
+            (plus court) démarre au même x — aligné avec le P de Photographer, cf.
+            maquette. Le "|" final compte : sans lui, une fois "Photographer" tapé
+            en entier, texte + curseur dépassent légèrement la largeur réservée par
+            le ghost, la colonne grid (max-content) grandit pour l'absorber et
+            recentre tout le bloc vers la gauche.
             Le wrapper (pas le span typed lui-même) porte la superposition grid :
             Typed.js insère son curseur comme sibling du span, il doit donc rester
             dans un flux normal pour progresser avec les lettres plutôt que de se
             figer au bord droit de la zone réservée. */}
         <span className="splash__ghost" aria-hidden="true">
-          Photograp<i>her</i>
+          Photograp<i>her</i>|
         </span>
         <span className="splash__typed-wrapper">
           <span ref={typedElRef} className="splash__text" />

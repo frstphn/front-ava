@@ -6,6 +6,7 @@ import '@fontsource/ibm-plex-sans/600.css'
 import '@fontsource/ibm-plex-sans/600-italic.css'
 import '@fontsource/ibm-plex-sans/700.css'
 import '@fontsource/ibm-plex-sans/700-italic.css'
+import '@fontsource/playfair-display/400.css'
 import './index.css'
 import App from './App.tsx'
 

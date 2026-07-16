@@ -6,6 +6,8 @@
   --font-serif: 'IBM Plex Serif', serif;
   /* IBM Plex Sans : accents en gras (splash, titres overlay des sections magnétiques home) */
   --font-sans: 'IBM Plex Sans', sans-serif;
+  /* Playfair Display : titre du bloc actualité ("Supernova"), identifié depuis la maquette */
+  --font-display: 'Playfair Display', serif;
 
   --header-height: 128px;
 }

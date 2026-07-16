@@ -6,10 +6,16 @@ import Splash from '../pages/Splash'
 import Header from '../components/Header'
 import ColorsSpiralButton from '../components/ColorsSpiralButton'
 
-function HeaderGate() {
+// Header et bouton spirale sont masqués sur le Splash (route "/")
+function SiteChrome() {
   const location = useLocation()
   if (location.pathname === '/') return null
-  return <Header />
+  return (
+    <>
+      <Header />
+      <ColorsSpiralButton />
+    </>
+  )
 }
 
 export default function AppRouter() {
@@ -20,8 +26,7 @@ export default function AppRouter() {
 
   return (
     <BrowserRouter>
-      <HeaderGate />
-      <ColorsSpiralButton />
+      <SiteChrome />
       <Suspense fallback={<div className="app-loading">Chargement…</div>}>
         <Routes>
           <Route path="/" element={<Splash />} />
