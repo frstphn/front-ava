@@ -50,18 +50,29 @@ export function placeImage(
   config: PlaceImageConfig,
 ): Placement {
   const { minSize, maxSize, laneCount, horizontalJitter, verticalGap, verticalGapJitter } = config
-  const laneWidth = containerWidth / laneCount
 
   const targetSize = Math.random() * (maxSize - minSize) + minSize
   const ratio = dimensions.width / dimensions.height
   const width = ratio >= 1 ? targetSize : targetSize * ratio
   const height = ratio >= 1 ? targetSize / ratio : targetSize
 
+  // Centres de couloir "insérés" d'une demi-taille-max depuis les bords : sur des
+  // couloirs de bord, centrer une image plus large que le couloir sur son propre
+  // centre géométrique la pousserait hors du viewport (clamp systématique à 0 ou au
+  // bord droit). En basant l'inset sur maxSize (fixe, pas la taille de CETTE image),
+  // la grille de couloirs reste stable d'une image à l'autre.
+  const halfMax = maxSize / 2
+  const usableWidth = Math.max(containerWidth - maxSize, 0)
+  const laneCenterX = (lane: number) =>
+    laneCount > 1 ? halfMax + (usableWidth * lane) / (laneCount - 1) : containerWidth / 2
+
   let attempt = 0
   while (attempt < MAX_ATTEMPTS) {
     const lane = Math.floor(Math.random() * laneCount)
-    const laneX = lane * laneWidth + (laneWidth - width) / 2
-    const x = Math.min(Math.max(laneX + (Math.random() * 2 - 1) * horizontalJitter, 0), containerWidth - width)
+    const x = Math.min(
+      Math.max(laneCenterX(lane) - width / 2 + (Math.random() * 2 - 1) * horizontalJitter, 0),
+      containerWidth - width,
+    )
     const y = laneBottoms[lane] + verticalGap + (Math.random() * 2 - 1) * verticalGapJitter
 
     // Phase 1 (premier viewport) : évite la zone du titre. Au-delà, placement libre.
@@ -91,4 +102,11 @@ export function getImageDimensions(img: WPImage): ImageDimensions {
   const grid = img.media_details?.sizes?.grid
   if (grid?.width && grid?.height) return { width: grid.width, height: grid.height }
   return { width: img.media_details?.width ?? 1, height: img.media_details?.height ?? 1 }
+}
+
+/** clientWidth (pas innerWidth) : exclut la scrollbar verticale déjà réservée par
+ *  `scrollbar-gutter: stable` (index.css) — sinon les images placées près du bord
+ *  droit avant l'apparition de la scrollbar débordent une fois qu'elle apparaît. */
+export function getContainerWidth(): number {
+  return document.documentElement.clientWidth
 }

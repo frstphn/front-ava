@@ -6,7 +6,7 @@ import type { WPPage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { usePages } from '../hooks/usePages'
 import { useIsMobile } from '../hooks/useIsMobile'
-import { placeImage, getImageDimensions } from '../utils/placeImage'
+import { placeImage, getImageDimensions, getContainerWidth } from '../utils/placeImage'
 import './Home.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -53,7 +53,7 @@ export default function Home({ page }: { page: WPPage }) {
       const laneBottoms = [0, 0]
       return previewImages.map((img) =>
         placeImage(
-          window.innerWidth,
+          getContainerWidth(),
           laneBottoms,
           getImageDimensions(img),
           null,

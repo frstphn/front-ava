@@ -16,6 +16,14 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Réserve toujours la place de la scrollbar verticale, même quand elle n'est pas
+     encore visible (page pas encore assez haute) — sans ça, les galeries flottantes
+     placent des images en tenant compte d'une largeur qui rétrécit dès que la
+     scrollbar apparaît, ce qui crée un débordement horizontal après coup. */
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   background-color: var(--bg);

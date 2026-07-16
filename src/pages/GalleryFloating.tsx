@@ -3,7 +3,7 @@ import type { WPPage, WPImage } from '../types/wp'
 import { useImages } from '../hooks/useImages'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { shuffle } from '../utils/shuffle'
-import { placeImage, getImageDimensions, type TitleZone } from '../utils/placeImage'
+import { placeImage, getImageDimensions, getContainerWidth, type TitleZone } from '../utils/placeImage'
 import { GALLERY_FLOATING_CONFIG } from '../config/galleryFloating'
 import Lightbox from '../components/Lightbox'
 import './GalleryFloating.css'
@@ -68,7 +68,7 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
 
     const newPlaced = next.map((img) => {
       const pos = placeImage(
-        window.innerWidth,
+        getContainerWidth(),
         laneBottomsRef.current,
         getImageDimensions(img),
         titleZone,
