@@ -1,8 +1,15 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { usePages } from '../hooks/usePages'
 import { templateMap } from './templateMap'
 import Splash from '../pages/Splash'
 import GalleryFloating from '../pages/GalleryFloating'
+import Header from '../components/Header'
+
+function HeaderGate() {
+  const location = useLocation()
+  if (location.pathname === '/') return null
+  return <Header />
+}
 
 export default function AppRouter() {
   const { data: pages, isLoading, isError } = usePages()
@@ -12,6 +19,7 @@ export default function AppRouter() {
 
   return (
     <BrowserRouter>
+      <HeaderGate />
       <Routes>
         <Route path="/" element={<Splash />} />
         {pages.map((page) => {

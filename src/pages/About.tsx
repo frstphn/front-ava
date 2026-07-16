@@ -2,7 +2,7 @@ import type { WPPage } from '../types/wp'
 
 export default function About({ page }: { page: WPPage }) {
   return (
-    <main>
+    <main className="page">
       <h1>{page.title.rendered}</h1>
       <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
     </main>

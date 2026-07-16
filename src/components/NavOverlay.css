@@ -1,0 +1,16 @@
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: calc(var(--header-height) + 24px) 32px 32px;
+}
+
+.nav-overlay a {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  text-decoration: none;
+}
