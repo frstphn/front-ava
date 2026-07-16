@@ -3,25 +3,23 @@
   right: 24px;
   bottom: 24px;
   z-index: 110;
-  width: 64px;
-  height: 64px;
+  width: 82px;
+  height: 82px;
   display: block;
-  overflow: hidden;
-  border-radius: 8px;
 }
 
-.spiral-button__video {
+.spiral-button__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   pointer-events: none;
 }
 
 @media (max-width: 768px) {
   .spiral-button {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
     right: 16px;
     bottom: 16px;
   }

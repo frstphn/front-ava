@@ -7,7 +7,7 @@
   /* IBM Plex Sans : accents en gras (splash, titres overlay des sections magnétiques home) */
   --font-sans: 'IBM Plex Sans', sans-serif;
 
-  --header-height: 88px;
+  --header-height: 128px;
 }
 
 * {
