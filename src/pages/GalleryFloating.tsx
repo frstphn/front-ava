@@ -4,10 +4,10 @@ import { useImages } from '../hooks/useImages'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { shuffle } from '../utils/shuffle'
 import { placeImage, type TitleZone } from '../utils/placeImage'
+import { GALLERY_FLOATING_CONFIG } from '../config/galleryFloating'
 import Lightbox from '../components/Lightbox'
 import './GalleryFloating.css'
 
-const BATCH_SIZE = 10
 // Proportion d'images qui passent derrière le titre plutôt que devant —
 // cf. maquette "le mot [titre] passe tantôt par dessus tantôt par dessous".
 const BEHIND_TITLE_RATIO = 0.35
@@ -48,7 +48,8 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
   const isMobile = useIsMobile()
 
   const loadNextBatch = useCallback(() => {
-    const next = orderedImages.slice(batchRef.current * BATCH_SIZE, (batchRef.current + 1) * BATCH_SIZE)
+    const { batchSize, minImageSize, maxImageSize, verticalStep, verticalJitter } = GALLERY_FLOATING_CONFIG
+    const next = orderedImages.slice(batchRef.current * batchSize, (batchRef.current + 1) * batchSize)
     if (!next.length) return
 
     const titleRect = titleRef.current?.getBoundingClientRect()
@@ -62,7 +63,12 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
       : null
 
     const newPlaced = next.map((img) => {
-      const pos = placeImage(window.innerWidth, currentYRef.current, titleZone, window.innerHeight)
+      const pos = placeImage(window.innerWidth, currentYRef.current, titleZone, window.innerHeight, {
+        minSize: minImageSize,
+        maxSize: maxImageSize,
+        verticalStep,
+        verticalJitter,
+      })
       currentYRef.current = Math.max(currentYRef.current, pos.y + pos.size)
       return { ...img, ...pos, behindTitle: Math.random() < BEHIND_TITLE_RATIO }
     })

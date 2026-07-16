@@ -7,11 +7,11 @@ interface LightboxProps {
   images: WPImage[]
   startIndex: number
   onClose: () => void
-  /** 'dark' : galeries flottantes (brief §6). 'frosted' : page Colors (brief §4). */
-  variant?: 'dark' | 'frosted'
+  /** 'light' : galeries flottantes (fond clair flouté). 'frosted' : page Colors (teinte jaune du site). */
+  variant?: 'light' | 'frosted'
 }
 
-export default function Lightbox({ images, startIndex, onClose, variant = 'dark' }: LightboxProps) {
+export default function Lightbox({ images, startIndex, onClose, variant = 'light' }: LightboxProps) {
   const [index, setIndex] = useState(startIndex)
   const img = images[index]
 

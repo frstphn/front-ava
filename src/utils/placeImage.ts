@@ -1,6 +1,4 @@
 // Adapté du brief §6 "Algorithme de placement flottant".
-const MIN_SIZE = 100
-const MAX_SIZE = 400
 const MAX_ATTEMPTS = 10
 
 export interface TitleZone {
@@ -16,18 +14,29 @@ export interface Placement {
   size: number
 }
 
+export interface PlaceImageConfig {
+  minSize: number
+  maxSize: number
+  /** Écart vertical moyen entre deux images (px) — cf. src/config/galleryFloating.ts. */
+  verticalStep: number
+  /** Amplitude aléatoire autour de l'écart vertical (px). */
+  verticalJitter: number
+}
+
 export function placeImage(
   containerWidth: number,
   currentY: number,
   titleZone: TitleZone | null,
   viewportHeight: number,
+  config: PlaceImageConfig,
 ): Placement {
-  const size = Math.floor(Math.random() * (MAX_SIZE - MIN_SIZE)) + MIN_SIZE
+  const { minSize, maxSize, verticalStep, verticalJitter } = config
+  const size = Math.floor(Math.random() * (maxSize - minSize)) + minSize
   let attempt = 0
 
   while (attempt < MAX_ATTEMPTS) {
     const x = Math.random() * Math.max(containerWidth - size, 0)
-    const y = currentY + (Math.random() * 60 - 20)
+    const y = currentY + verticalStep + (Math.random() * 2 - 1) * verticalJitter
 
     // Phase 1 (premier viewport) : évite la zone du titre. Au-delà, placement libre.
     if (titleZone && y < viewportHeight) {

@@ -8,10 +8,10 @@
   cursor: zoom-out;
 }
 
-.lightbox--dark {
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+.lightbox--light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .lightbox--frosted {
@@ -33,11 +33,6 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #fff;
-}
-
-.lightbox--frosted .lightbox__nav,
-.lightbox--frosted .lightbox__close {
   color: var(--color-text);
 }
 
