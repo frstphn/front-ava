@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "accueil",
+    "template": "home",
+    "title": {
+      "rendered": "Accueil"
+    },
+    "content": {
+      "rendered": "<p>Bloc actualité — mis à jour ~1x/an par le client.</p>"
+    }
+  },
+  {
+    "slug": "portraits",
+    "template": "gallery-floating",
+    "title": {
+      "rendered": "Portraits"
+    },
+    "content": {
+      "rendered": "<p>Série portraits.</p>"
+    }
+  },
+  {
+    "slug": "making-of",
+    "template": "gallery-floating",
+    "title": {
+      "rendered": "Making-of"
+    },
+    "content": {
+      "rendered": "<p>Coulisses des shootings.</p>"
+    }
+  },
+  {
+    "slug": "interieurs",
+    "template": "gallery-floating",
+    "title": {
+      "rendered": "Intérieurs"
+    },
+    "content": {
+      "rendered": "<p>Photographie d’intérieurs.</p>"
+    }
+  },
+  {
+    "slug": "reportage",
+    "template": "gallery-floating",
+    "title": {
+      "rendered": "Reportage"
+    },
+    "content": {
+      "rendered": "<p>Reportages.</p>"
+    }
+  },
+  {
+    "slug": "colors",
+    "template": "gallery-colors",
+    "title": {
+      "rendered": "Colors"
+    },
+    "content": {
+      "rendered": ""
+    }
+  },
+  {
+    "slug": "a-propos",
+    "template": "about",
+    "title": {
+      "rendered": "À propos"
+    },
+    "content": {
+      "rendered": "<p>Bio, coordonnées, CV.</p>"
+    }
+  }
+]

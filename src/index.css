@@ -1,0 +1,13 @@
+:root {
+  --bg: #fff8bd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
