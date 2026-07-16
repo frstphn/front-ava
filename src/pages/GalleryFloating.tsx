@@ -46,6 +46,9 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
   const batchRef = useRef(0)
   // Un curseur Y par couloir (densité horizontale) — cf. src/utils/placeImage.ts.
   const laneBottomsRef = useRef<number[]>(new Array(GALLERY_FLOATING_CONFIG.laneCount).fill(0))
+  // Round-robin plutôt qu'aléatoire : garantit que chaque couloir (y compris celui
+  // du milieu, qui chevauche le titre) reçoit sa part d'images.
+  const laneSequenceRef = useRef(0)
   const titleRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
@@ -67,9 +70,12 @@ function GalleryFloatingBody({ page, images }: { page: WPPage; images: WPImage[]
       : null
 
     const newPlaced = next.map((img) => {
+      const lane = laneSequenceRef.current % laneCount
+      laneSequenceRef.current += 1
       const pos = placeImage(
         getContainerWidth(),
         laneBottomsRef.current,
+        lane,
         getImageDimensions(img),
         titleZone,
         window.innerHeight,

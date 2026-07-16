@@ -4,8 +4,6 @@
 // jitter horizontal créer un chevauchement modéré entre couloirs voisins.
 import type { WPImage } from '../types/wp'
 
-const MAX_ATTEMPTS = 10
-
 export interface TitleZone {
   x1: number
   x2: number
@@ -40,10 +38,17 @@ export interface PlaceImageConfig {
 /**
  * `laneBottoms` est muté en place : un curseur Y (bas de la dernière image placée)
  * par couloir, à conserver entre les appels (un par batch d'images chargées).
+ *
+ * `lane` est décidé par l'appelant (round-robin) plutôt que tiré au hasard ici : un
+ * choix aléatoire répété à chaque tentative d'évitement du titre redirigeait presque
+ * toujours les images du couloir central (qui chevauche la zone du titre, elle-même
+ * centrée) vers les couloirs de bord — son curseur Y ne progressait jamais, le
+ * couloir central restant vide indéfiniment, bien au-delà du premier viewport.
  */
 export function placeImage(
   containerWidth: number,
   laneBottoms: number[],
+  lane: number,
   dimensions: ImageDimensions,
   titleZone: TitleZone | null,
   viewportHeight: number,
@@ -58,42 +63,32 @@ export function placeImage(
 
   // Centres de couloir "insérés" d'une demi-taille-max depuis les bords : sur des
   // couloirs de bord, centrer une image plus large que le couloir sur son propre
-  // centre géométrique la pousserait hors du viewport (clamp systématique à 0 ou au
-  // bord droit). En basant l'inset sur maxSize (fixe, pas la taille de CETTE image),
-  // la grille de couloirs reste stable d'une image à l'autre.
+  // centre géométrique la pousserait hors du viewport. En basant l'inset sur maxSize
+  // (fixe, pas la taille de CETTE image), la grille de couloirs reste stable.
   const halfMax = maxSize / 2
   const usableWidth = Math.max(containerWidth - maxSize, 0)
-  const laneCenterX = (lane: number) =>
-    laneCount > 1 ? halfMax + (usableWidth * lane) / (laneCount - 1) : containerWidth / 2
+  const laneCenterX = laneCount > 1 ? halfMax + (usableWidth * lane) / (laneCount - 1) : containerWidth / 2
 
-  let attempt = 0
-  while (attempt < MAX_ATTEMPTS) {
-    const lane = Math.floor(Math.random() * laneCount)
-    const x = Math.min(
-      Math.max(laneCenterX(lane) - width / 2 + (Math.random() * 2 - 1) * horizontalJitter, 0),
-      containerWidth - width,
-    )
-    const y = laneBottoms[lane] + verticalGap + (Math.random() * 2 - 1) * verticalGapJitter
+  const x = Math.min(
+    Math.max(laneCenterX - width / 2 + (Math.random() * 2 - 1) * horizontalJitter, 0),
+    containerWidth - width,
+  )
 
-    // Phase 1 (premier viewport) : évite la zone du titre. Au-delà, placement libre.
-    if (titleZone && y < viewportHeight) {
-      const overlapsTitle =
-        x < titleZone.x2 && x + width > titleZone.x1 && y < titleZone.y2 && y + height > titleZone.y1
+  let y = laneBottoms[lane] + verticalGap + (Math.random() * 2 - 1) * verticalGapJitter
 
-      if (overlapsTitle) {
-        attempt++
-        continue
-      }
+  // Phase 1 (premier viewport) : si l'image tombe sur la zone du titre, on la pousse
+  // juste sous cette zone plutôt que de changer de couloir — le curseur du couloir
+  // avance toujours, il ne reste jamais bloqué en attente indéfiniment.
+  if (titleZone && y < viewportHeight) {
+    const overlapsTitle =
+      x < titleZone.x2 && x + width > titleZone.x1 && y < titleZone.y2 && y + height > titleZone.y1
+    if (overlapsTitle) {
+      y = titleZone.y2 + 20
     }
-
-    laneBottoms[lane] = y + height
-    return { x, y, width, height }
   }
 
-  // Fallback : couloir 0, colle sous la dernière image de ce couloir
-  const y = laneBottoms[0]
-  laneBottoms[0] = y + height
-  return { x: 10, y, width, height }
+  laneBottoms[lane] = y + height
+  return { x, y, width, height }
 }
 
 /** Dimensions réelles de l'image (grid size, ou taille originale à défaut) — pour
