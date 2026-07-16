@@ -19,13 +19,21 @@ const PREVIEW_COUNT = 4
 
 // Placement dédié à 4 images fixes (src/utils/placeHomePreview.ts) — le moteur de
 // couloirs de GalleryFloating est conçu pour un flux dense, pas pour ce cas.
+// Même effet (titre entouré d'images flottantes) sur mobile que sur desktop, juste
+// des images plus petites vu la largeur d'écran disponible.
 const PREVIEW_CONFIG = {
   minSize: 260,
   maxSize: 520,
-  // header (128px) + marge : les vignettes sont petites, on évite qu'il les recouvre
-  // trop (contrairement aux pages galeries où c'est assumé sur des images pleines).
   topOffset: 100,
   jitter: 0.2,
+}
+
+const MOBILE_PREVIEW_CONFIG = {
+  minSize: 110,
+  maxSize: 190,
+  // header mobile (80px) + marge.
+  topOffset: 100,
+  jitter: 0.12,
 }
 
 export default function Home({ page }: { page: WPPage }) {
@@ -48,12 +56,13 @@ export default function Home({ page }: { page: WPPage }) {
   }, [pages, images])
 
   // Calculé après montage (pas en useMemo pendant le render) : il faut les titres déjà
-  // rendus pour mesurer leur zone réelle et les éviter, comme sur les pages galeries.
+  // rendus pour mesurer leur zone réelle et les éviter, sur mobile comme sur desktop.
   useEffect(() => {
-    if (isMobile || gallerySections.length === 0) return
+    if (gallerySections.length === 0) return
 
     const containerWidth = getContainerWidth()
     const viewportHeight = window.innerHeight
+    const config = isMobile ? MOBILE_PREVIEW_CONFIG : PREVIEW_CONFIG
 
     const next = gallerySections.map(({ slug, previewImages }) => {
       const titleRect = titleRefs.current.get(slug)?.getBoundingClientRect()
@@ -66,12 +75,13 @@ export default function Home({ page }: { page: WPPage }) {
           }
         : null
 
-      return placeHomePreviewImages(previewImages, containerWidth, viewportHeight, titleZone, PREVIEW_CONFIG)
+      return placeHomePreviewImages(previewImages, containerWidth, viewportHeight, titleZone, config)
     })
 
     setPlacements(next)
   }, [isMobile, gallerySections])
 
+  // Snap + fade GSAP : desktop uniquement (scroll libre sur mobile, cf. brief).
   useEffect(() => {
     if (isMobile || !sectionsRef.current) return
 
@@ -126,60 +136,39 @@ export default function Home({ page }: { page: WPPage }) {
 
   return (
     <main className="page home">
-      {isMobile ? (
-        <div className="home-sections home-sections--mobile">
-          {actualityBlock}
-          {gallerySections.map(({ slug, page: galleryPage, previewImages }) => (
-            <Link key={slug} to={`/${slug}`} className="home-section-mobile">
-              <h2>{galleryPage.title.rendered}</h2>
-              <div className="home-section-mobile__images">
-                {previewImages.map((img) => (
-                  <img
-                    key={img.id}
-                    src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
-                    loading="lazy"
-                    alt=""
-                  />
-                ))}
-              </div>
-            </Link>
-          ))}
-          <Link to="/a-propos" className="home-section-mobile">
-            <h2>Infos &amp; Contact</h2>
-          </Link>
-        </div>
-      ) : (
-        <div ref={sectionsRef} className="home-sections">
-          <section className="home-section home-section--actuality">{actualityBlock}</section>
+      {/* Même structure mobile et desktop : seule la config de placement (tailles,
+          marge) diffère selon isMobile — le snap GSAP se désactive de lui-même
+          sur mobile (scroll libre, sections empilées, cf. brief). */}
+      <div ref={sectionsRef} className="home-sections">
+        <section className="home-section home-section--actuality">{actualityBlock}</section>
 
-          {gallerySections.map(({ slug, page: galleryPage, previewImages }, i) => (
-            <Link key={slug} to={`/${slug}`} className="home-section">
-              {placements[i]?.map((pos, j) => {
-                const img = previewImages[j]
-                return (
-                  <img
-                    key={img.id}
-                    src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
-                    loading="lazy"
-                    className="home-section__image"
-                    style={{ left: pos.x, top: pos.y, width: pos.width, height: pos.height }}
-                    alt=""
-                  />
-                )
-              })}
-              <div className="home-section__content">
-                <h2 ref={(el) => void (el && titleRefs.current.set(slug, el))}>{galleryPage.title.rendered}</h2>
-              </div>
-            </Link>
-          ))}
-
-          <Link to="/a-propos" className="home-section home-section--plain">
+        {gallerySections.map(({ slug, page: galleryPage, previewImages }, i) => (
+          <Link key={slug} to={`/${slug}`} className="home-section">
+            {placements[i]?.map((pos, j) => {
+              const img = previewImages[j]
+              return (
+                <img
+                  key={img.id}
+                  src={img.media_details?.sizes?.grid?.source_url ?? img.source_url}
+                  loading="lazy"
+                  className="home-section__image"
+                  style={{ left: pos.x, top: pos.y, width: pos.width, height: pos.height }}
+                  alt=""
+                />
+              )
+            })}
             <div className="home-section__content">
-              <h2>Infos &amp; Contact</h2>
+              <h2 ref={(el) => void (el && titleRefs.current.set(slug, el))}>{galleryPage.title.rendered}</h2>
             </div>
           </Link>
-        </div>
-      )}
+        ))}
+
+        <Link to="/a-propos" className="home-section home-section--plain">
+          <div className="home-section__content">
+            <h2>Infos &amp; Contact</h2>
+          </div>
+        </Link>
+      </div>
 
       <button
         type="button"

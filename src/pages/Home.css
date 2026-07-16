@@ -100,45 +100,6 @@
   color: var(--color-text);
 }
 
-/* Mobile : flux vertical, pas de placement flottant */
-.home-sections--mobile {
-  display: flex;
-  flex-direction: column;
-}
-
-.home-section-mobile {
-  padding: 2rem 1rem;
-  text-decoration: none;
-  color: var(--color-text);
-  text-align: center;
-}
-
-.home-section-mobile h2 {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-style: italic;
-  font-size: clamp(1.75rem, 8vw, 2.5rem);
-  text-transform: uppercase;
-  margin: 0 0 1rem;
-}
-
-/* Colonnes CSS plutôt qu'une grille figée : chaque image garde sa vraie proportion
-   (portrait/paysage/carré, cf. fixtures), ce qui casse l'effet "grille 2x2" sans
-   recourir à un positionnement absolu (pas nécessaire ni souhaitable sur mobile). */
-.home-section-mobile__images {
-  columns: 2;
-  column-gap: 8px;
-}
-
-.home-section-mobile__images img {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  break-inside: avoid;
-}
-
 @media (max-width: 768px) {
   .home__actuality {
     grid-template-columns: 1fr;
