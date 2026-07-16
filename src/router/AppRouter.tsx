@@ -6,14 +6,15 @@ import Splash from '../pages/Splash'
 import Header from '../components/Header'
 import ColorsSpiralButton from '../components/ColorsSpiralButton'
 
-// Header et bouton spirale sont masqués sur le Splash (route "/")
+// Header masqué sur le Splash (route "/"). Bouton spirale masqué en plus sur
+// /colors elle-même — inutile de proposer un lien vers la page où l'on est déjà.
 function SiteChrome() {
   const location = useLocation()
   if (location.pathname === '/') return null
   return (
     <>
       <Header />
-      <ColorsSpiralButton />
+      {location.pathname !== '/colors' && <ColorsSpiralButton />}
     </>
   )
 }

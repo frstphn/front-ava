@@ -19,7 +19,8 @@
 }
 
 /* Fixed en bas d'écran : sinon inaccessible sans scroller jusqu'au bout d'une
-   grille qui peut compter des centaines d'images. */
+   grille qui peut compter des centaines d'images. Même transparence que le
+   Header pour rester cohérent. */
 .gallery-colors__filters {
   position: fixed;
   left: 0;
@@ -32,9 +33,27 @@
   gap: 1.5rem;
   flex-wrap: wrap;
   padding: 16px;
-  background: rgba(255, 248, 189, 0.9);
+  background: rgba(255, 248, 189, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* Limite haute adoucie : un dégradé d'opacité/flou plutôt qu'un bord net.
+   mask-image fait varier l'intensité du backdrop-filter de cette bande, qui
+   se superpose au fond flou de .gallery-colors__filters juste en dessous. */
+.gallery-colors__filters::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255, 248, 189, 0), rgba(255, 248, 189, 0.85));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask-image: linear-gradient(to bottom, transparent, black);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black);
+  pointer-events: none;
 }
 
 /* Le brief spécifie du texte blanc, illisible sur le fond #fff8bd du site —

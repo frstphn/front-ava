@@ -9,16 +9,18 @@ import './GalleryColors.css'
 const COLOR_TAGS = ['blanc', 'rouge', 'vert', 'bleu', 'jaune', 'magenta', 'cyan', 'noir']
 const FILTERS = ['*', ...COLOR_TAGS]
 
+// Fond derrière la grille = la couleur nommée par le filtre actif (pas juste un
+// vague lavis) — "blanc" doit donner un fond réellement blanc, etc.
 const AMBIENT_COLORS: Record<string, string> = {
   '*': 'transparent',
-  blanc: 'rgba(255, 255, 255, 0.06)',
-  rouge: 'rgba(226, 75, 74, 0.08)',
-  vert: 'rgba(99, 153, 34, 0.08)',
-  bleu: 'rgba(55, 138, 221, 0.08)',
-  jaune: 'rgba(239, 159, 39, 0.1)',
-  magenta: 'rgba(212, 83, 126, 0.08)',
-  cyan: 'rgba(93, 202, 165, 0.08)',
-  noir: 'rgba(44, 44, 42, 0.12)',
+  blanc: '#ffffff',
+  rouge: '#e24b4a',
+  vert: '#639322',
+  bleu: '#378add',
+  jaune: '#ef9f27',
+  magenta: '#d4537e',
+  cyan: '#5dcaa5',
+  noir: '#2c2c2a',
 }
 
 // Étale la vague de flip sur une durée fixe plutôt qu'un délai de i*30ms par carte
