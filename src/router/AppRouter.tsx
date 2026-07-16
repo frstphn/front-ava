@@ -4,6 +4,7 @@ import { templateMap } from './templateMap'
 import Splash from '../pages/Splash'
 import GalleryFloating from '../pages/GalleryFloating'
 import Header from '../components/Header'
+import ColorsSpiralButton from '../components/ColorsSpiralButton'
 
 function HeaderGate() {
   const location = useLocation()
@@ -20,6 +21,7 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <HeaderGate />
+      <ColorsSpiralButton />
       <Routes>
         <Route path="/" element={<Splash />} />
         {pages.map((page) => {
