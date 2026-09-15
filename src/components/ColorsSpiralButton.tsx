@@ -8,7 +8,12 @@ import './ColorsSpiralButton.css'
 export default function ColorsSpiralButton() {
   return (
     <Link to="/colors" className="spiral-button" aria-label="Aller à la page Colors">
-      <img className="spiral-button__image" src="/spinner.webp" alt="" aria-hidden="true" />
+      <img
+        className="spiral-button__image"
+        src={`${import.meta.env.BASE_URL}spinner.webp`}
+        alt=""
+        aria-hidden="true"
+      />
     </Link>
   )
 }

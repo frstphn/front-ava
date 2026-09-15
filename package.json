@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/front-ava/ && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "lint": "oxlint",
     "preview": "vite preview",
     "generate:mock": "node scripts/generate-mock-data.mjs"
